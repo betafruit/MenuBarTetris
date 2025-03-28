@@ -207,8 +207,11 @@ let keyMappings: [Int: KeyActionMapping] = [
     124: KeyActionMapping(action: .moveRight, repeatable: true),  // Right
     2: KeyActionMapping(action: .moveRight, repeatable: true),  // D
 
-    60: KeyActionMapping(action: .hide, repeatable: false),  // Right
-    12: KeyActionMapping(action: .hide, repeatable: false),  // D
+    44: KeyActionMapping(action: .hide, repeatable: false),  // Forward Slash
+    56: KeyActionMapping(action: .hide, repeatable: false),  // Shift
+    58: KeyActionMapping(action: .hide, repeatable: false),  // Option
+    60: KeyActionMapping(action: .hide, repeatable: false),  // Right Shift
+    12: KeyActionMapping(action: .hide, repeatable: false),  // Q
 ]
 
 struct GameView_Previews: PreviewProvider {
