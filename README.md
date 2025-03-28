@@ -6,7 +6,7 @@
   <ul>
     <li>Lives in your menu bar and pauses when you click away!</li>
     <li>Can use both soft and hard drops, toggleable from the start menu.</li>
-    <li>All 20 tetris levels and a proper scoring system.</li>
+    <li>All 20 Tetris levels and a proper scoring system.</li>
     <li>Persistant high score and user preferences.</li>
   </ul>
   <h3>Controls:</h3>
