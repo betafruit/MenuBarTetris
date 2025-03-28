@@ -1,7 +1,7 @@
 <h1>Menu Bar Tetris</h1>
 <img src=https://github.com/user-attachments/assets/53c2dac3-584d-44f0-a0e8-4fcee5faecc2/ height="430" align="right">
 <div>
-  <p>A playable game of tetris in your macos menu bar! Another win for anti-productivity.</p>
+  <p>A playable game of Tetris in your MacOS menu bar! Another win for anti-productivity.</p>
   <h3>Features:</h3>
   <ul>
     <li>Lives in your menu bar and pauses when you click away!</li>
