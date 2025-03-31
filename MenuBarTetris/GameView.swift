@@ -116,10 +116,10 @@ struct GameView: View {
             mapping.repeatable && !(mapping.action == .drop && game.hardDrops)  // Do not repeat hard drops
         {
             keyRepeatTimer = Timer.scheduledTimer(
-                withTimeInterval: 0.3, repeats: false
+                withTimeInterval: 0.2, repeats: false
             ) { _ in  // Initial delay
                 self.keyRepeatTimer = Timer.scheduledTimer(
-                    withTimeInterval: 0.08, repeats: true
+                    withTimeInterval: 0.07, repeats: true
                 ) { _ in  // Repeat
                     if let event = self.lastEvent {
                         self.keyAction(with: event)

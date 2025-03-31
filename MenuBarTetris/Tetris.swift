@@ -46,11 +46,10 @@ class Tetris: ObservableObject {
             } else {
                 timer?.invalidate()
                 let speed: TimeInterval = pow(
-                    0.8 - Double(level) / 2 * 0.007, Double(level) / 2)  // Found this time curve on the wiki but it felt to fast so I didvided the level by 2
+                    0.8 - Double(level) / 2 * 0.007, Double(level) / 2)  // Found this time curve on the wiki but it felt to fast so I divided the level by 2
                 timer = Timer.scheduledTimer(
                     withTimeInterval: speed, repeats: true
-                ) { _ in  // Every time the timer activates, apply gravity and render
-                    if self.isAnimating { return }
+                ) { _ in  // Every time the timer activates apply gravity
                     self.applyGravity(manual: false)
                 }
                 isPaused = false
