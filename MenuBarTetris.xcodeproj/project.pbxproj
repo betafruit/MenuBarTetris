@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		46BBDFDE2DB2BAF5000435DD /* MenuBarExtraAccess in Frameworks */ = {isa = PBXBuildFile; productRef = 46BBDFDD2DB2BAF5000435DD /* MenuBarExtraAccess */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		4639A2F42D02912100D1E338 /* MenuBarTetris.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MenuBarTetris.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -23,6 +27,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				46BBDFDE2DB2BAF5000435DD /* MenuBarExtraAccess in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -65,6 +70,7 @@
 			);
 			name = MenuBarTetris;
 			packageProductDependencies = (
+				46BBDFDD2DB2BAF5000435DD /* MenuBarExtraAccess */,
 			);
 			productName = MenuBarTetris;
 			productReference = 4639A2F42D02912100D1E338 /* MenuBarTetris.app */;
@@ -94,6 +100,9 @@
 			);
 			mainGroup = 4639A2EB2D02912100D1E338;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				46BBDFDC2DB2BAF5000435DD /* XCRemoteSwiftPackageReference "MenuBarExtraAccess" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 4639A2F52D02912100D1E338 /* Products */;
 			projectDirPath = "";
@@ -254,7 +263,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"MenuBarTetris/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = LUPWU5GD69;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
@@ -268,7 +277,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.1;
-				MARKETING_VERSION = 1.01;
+				MARKETING_VERSION = 1.02;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = betafruit.MenuBarTetris;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -289,7 +298,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"MenuBarTetris/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = LUPWU5GD69;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
@@ -303,7 +312,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.1;
-				MARKETING_VERSION = 1.01;
+				MARKETING_VERSION = 1.02;
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = betafruit.MenuBarTetris;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -335,6 +344,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		46BBDFDC2DB2BAF5000435DD /* XCRemoteSwiftPackageReference "MenuBarExtraAccess" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/orchetect/MenuBarExtraAccess";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.2.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		46BBDFDD2DB2BAF5000435DD /* MenuBarExtraAccess */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 46BBDFDC2DB2BAF5000435DD /* XCRemoteSwiftPackageReference "MenuBarExtraAccess" */;
+			productName = MenuBarExtraAccess;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 4639A2EC2D02912100D1E338 /* Project object */;
 }

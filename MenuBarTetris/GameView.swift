@@ -9,10 +9,11 @@ import SwiftUI
 
 struct GameView: View {
     @ObservedObject var game: Tetris
+    @Binding var isMenuPresented: Bool
     @State private var keyRepeatTimer: Timer?
     @State private var lastKeyPressed: UInt16?
     @State private var lastEvent: NSEvent?
-
+    
     var body: some View {
         VStack {
             HStack {
@@ -29,9 +30,9 @@ struct GameView: View {
                         }.padding(.leading, -10)
                     }
                     .frame(width: 95)
-
+                    
                     Spacer()
-
+                    
                     if game.hardDrops {
                         Button(action: {
                             game.hardDrops = false
@@ -46,13 +47,13 @@ struct GameView: View {
                     }
                 } else {
                     Text("Lvl \(game.level + 1)").font(.headline)
-
+                    
                     Spacer()
-
+                    
                     Text(
                         "Hi: \(UserDefaults.standard.integer(forKey: "highScore"))"
                     ).font(.headline)
-
+                    
                     Text("Score: \(game.score)").font(.headline)
                 }
             }
@@ -60,7 +61,7 @@ struct GameView: View {
             .padding(.top)
             .padding(.horizontal)
             .padding(.bottom, 8)
-
+            
             Grid(horizontalSpacing: 1, verticalSpacing: 1) {  // Render the grid
                 ForEach(0..<20, id: \.self) { row in
                     GridRow {
@@ -74,16 +75,16 @@ struct GameView: View {
             }
             .border(Color.secondary, width: 1)
             .padding(.horizontal)
-
+            
             HStack {
                 if game.isInMenu {
                     Button(action: { game.newGame() }) { Text("Start Game") }
                 } else {
                     Button(action: { game.endGame() }) { Text("Abandon Game") }
                 }
-
+                
                 Spacer()
-
+                
                 Button(action: { NSApplication.shared.terminate(nil) }) {
                     Text("Quit")
                 }
@@ -99,21 +100,21 @@ struct GameView: View {
                 }
                 return nil
             }
-
+            
             NSEvent.addLocalMonitorForEvents(matching: .keyUp) { event in
                 self.stopKeyRepeat()
                 return nil
             }
         }
     }
-
+    
     func startKeyRepeat(event: NSEvent) {
         stopKeyRepeat()
         keyAction(with: event)
         lastEvent = event
-
+        
         if let mapping = keyMappings[Int(event.keyCode)],
-            mapping.repeatable && !(mapping.action == .drop && game.hardDrops)  // Do not repeat hard drops
+           mapping.repeatable && !(mapping.action == .drop && game.hardDrops)  // Do not repeat hard drops
         {
             keyRepeatTimer = Timer.scheduledTimer(
                 withTimeInterval: 0.2, repeats: false
@@ -128,16 +129,16 @@ struct GameView: View {
             }
         }
     }
-
+    
     func stopKeyRepeat() {
         keyRepeatTimer?.invalidate()
         keyRepeatTimer = nil
         lastEvent = nil
     }
-
+    
     func keyAction(with event: NSEvent) {
         guard let mapping = keyMappings[Int(event.keyCode)] else { return }
-
+        
         switch mapping.action {
         case .moveLeft:
             game.movePiece(dir: -1)
@@ -150,10 +151,12 @@ struct GameView: View {
         case .drop:
             game.applyGravity(manual: true)
         case .hide:
-            NSApp.hide(nil)
+            game.pauseUnpause(pause: true)
+            isMenuPresented = false
+            //NSApp.hide(nil) <- Decided not to use this because the window disapeares but the icon stayes selected
         }
     }
-
+    
     func colourCell(_ value: Int) -> Color {
         switch value {
         case 0:
@@ -197,26 +200,19 @@ struct KeyActionMapping {
 let keyMappings: [Int: KeyActionMapping] = [
     126: KeyActionMapping(action: .rotateLeft, repeatable: false),  // Up
     13: KeyActionMapping(action: .rotateLeft, repeatable: false),  // W
-
+    
     123: KeyActionMapping(action: .moveLeft, repeatable: true),  // Left
     0: KeyActionMapping(action: .moveLeft, repeatable: true),  // A
-
+    
     125: KeyActionMapping(action: .drop, repeatable: true),  // Down
     1: KeyActionMapping(action: .drop, repeatable: true),  // S
-
+    
     124: KeyActionMapping(action: .moveRight, repeatable: true),  // Right
     2: KeyActionMapping(action: .moveRight, repeatable: true),  // D
-
+    
     44: KeyActionMapping(action: .hide, repeatable: false),  // Forward Slash
     56: KeyActionMapping(action: .hide, repeatable: false),  // Shift
     58: KeyActionMapping(action: .hide, repeatable: false),  // Option
     60: KeyActionMapping(action: .hide, repeatable: false),  // Right Shift
     12: KeyActionMapping(action: .hide, repeatable: false),  // Q
 ]
-
-struct GameView_Previews: PreviewProvider {
-    static var previews: some View {
-        GameView(game: Tetris())
-            .fixedSize()
-    }
-}

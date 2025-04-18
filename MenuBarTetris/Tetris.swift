@@ -13,12 +13,13 @@ class Tetris: ObservableObject {
         repeating: Array(repeating: 0, count: 10), count: 20)  // [Rows][Columns]
     @Published var renderGrid: [[Int]] = Array(
         repeating: Array(repeating: 0, count: 10), count: 20)  // [Rows][Columns]
-
+    
     private var activePiece: Int = 0
     private var activePosition: Coord = Coord(x: 0, y: 0)
     private var activeRotation: Int = 0
+    private var hasDropped: Bool = false
     private var spawnBag: [Int] = Array(0...6)
-
+    
     @Published var startLevel: Int = UserDefaults.standard.integer(
         forKey: "startLevel")
     @Published var level: Int = 0
@@ -26,18 +27,18 @@ class Tetris: ObservableObject {
     @Published var score: Int = 0
     @Published var hardDrops: Bool = UserDefaults.standard.bool(
         forKey: "hardDrops")
-
+    
     private var timer: Timer?
     private var fastTimer: Timer?
     private var fastFlicker: Bool = false
     private var flickerLines: [Int] = []
-
+    
     private var isAnimating: Bool = false
     private var isPaused: Bool = true
     @Published var isInMenu: Bool = true
-
+    
     init() {}  // Ensure only one instance
-
+    
     func pauseUnpause(pause: Bool) {
         if !isInMenu {  // Don't unpause on resumed focus if there is no game happening
             if pause {
@@ -56,7 +57,7 @@ class Tetris: ObservableObject {
             }
         }
     }
-
+    
     func endGame() {
         pauseUnpause(pause: true)  // Takes care of ending the game timer
         isInMenu = true
@@ -71,13 +72,13 @@ class Tetris: ObservableObject {
         fastTimer?.invalidate()
         isAnimating = false
     }
-
+    
     func changeStartLevel(amount: Int) {
         let new = (startLevel + amount + 20) % 20  // Add and extra 20 because of negative modulos being annoying
         startLevel = new
         UserDefaults.standard.set(new, forKey: "startLevel")
     }
-
+    
     func newGame() {
         grid = Array(repeating: Array(repeating: 0, count: 10), count: 20)
         score = 0
@@ -95,7 +96,7 @@ class Tetris: ObservableObject {
         isAnimating = false
         newPiece()  // Calls render when finished
     }
-
+    
     func movePiece(dir: Int) {
         if isAnimating || isPaused { return }
         let newX = activePosition.x + dir
@@ -106,7 +107,7 @@ class Tetris: ObservableObject {
         }  // Check new position before moving
         render()
     }
-
+    
     func rotatePiece(dir: Int) {
         if isAnimating || isPaused { return }
         let newRot = (activeRotation + dir + 4) % 4
@@ -116,10 +117,10 @@ class Tetris: ObservableObject {
         else if activePiece != 3 {  // If piece is not O, test SRS wall kicks
             let dirIndex = dir == -1 ? 0 : 1  // If turning counterclockwise use first array, otherwise use second
             let kicks =
-                activePiece == 0
-                ? Ikicks[dirIndex][activeRotation]
-                : Vkicks[dirIndex][activeRotation]  // Use the normal wall kicks unless the piece is I
-
+            activePiece == 0
+            ? Ikicks[dirIndex][activeRotation]
+            : Vkicks[dirIndex][activeRotation]  // Use the normal wall kicks unless the piece is I
+            
             for kick in kicks {  // Test all possible wall kicks sequentially
                 let newCoord = Coord(
                     x: activePosition.x + kick.x, y: activePosition.y - kick.y)
@@ -132,31 +133,34 @@ class Tetris: ObservableObject {
         }
         render()
     }
-
+    
     func applyGravity(manual: Bool) {
         if isAnimating || isPaused { return }
         let newY = activePosition.y + 1
-
+        
         if manual && hardDrops {
+            if (hasDropped) { return }
             activePosition.y += findLowest()  // Do not place piece yet, allow it to be moved a bit
             pauseUnpause(pause: false)  // Restart the timer so peice can be moved more
+            hasDropped = true
             render()
         } else if checkPiece(
             pos: Coord(x: activePosition.x, y: newY), rot: activeRotation)  // Check new position before moving, if invalid then place
         {
             activePosition.y = newY
+            hasDropped = false
             render()
         } else  // Place piece on grid
         {
             for coord in tetrominoes[activePiece][activeRotation] {
                 let x = coord.x + activePosition.x
                 let y = coord.y + activePosition.y
-
+                
                 if y >= 0 {
                     grid[y][x] = activePiece + 1
                 }  // Just in case you rotate a piece out of grid dimensions and then it tries to place (ie: rotating the line right when it appears)
             }
-
+            
             // Check for completed lines
             var completedLines: [Int] = []
             for (i, row) in grid.enumerated() {
@@ -180,7 +184,7 @@ class Tetris: ObservableObject {
             newPiece()
         }
     }
-
+    
     private func newPiece() {
         if spawnBag.count == 0 {
             spawnBag = Array(0...6)
@@ -190,7 +194,7 @@ class Tetris: ObservableObject {
         )  // Pick a random index from the bag
         activePiece = spawnBag[index]
         spawnBag.remove(at: index)
-
+        
         activePosition = Coord(
             x: 3, y: (activePiece == 0 || activePiece == 3) ? -1 : 0)  // Spawn the O and I pieces one higher
         activeRotation = 0
@@ -203,23 +207,24 @@ class Tetris: ObservableObject {
                 self.endGame()
             }
         }
+        hasDropped = false
         render()
     }
-
+    
     private func fastLoop() {  // Flicker clearing lines
         fastFlicker.toggle()
         render()
         for line in flickerLines {
             renderGrid[line] =
-                fastFlicker
-                ? Array(repeating: 0, count: 10)
-                : Array(
-                    repeating: 8,
-                    count: 10
-                )  // Either set line to 10 clear squares or 10 grey squares
+            fastFlicker
+            ? Array(repeating: 0, count: 10)
+            : Array(
+                repeating: 8,
+                count: 10
+            )  // Either set line to 10 clear squares or 10 grey squares
         }
     }
-
+    
     private func clearFlickerLines() {
         score += [40, 100, 300, 1300][flickerLines.count - 1] * (level + 1)  // Calculate new score
         clearedLines += flickerLines.count
@@ -238,7 +243,7 @@ class Tetris: ObservableObject {
             if flickerLines.contains(i) {
                 for j in (0...19 - offset).reversed() {
                     grid[j] =
-                        j > 0 ? grid[j - 1] : Array(repeating: 0, count: 10)
+                    j > 0 ? grid[j - 1] : Array(repeating: 0, count: 10)
                 }
             }  // If the line is disappearing set every line that isn't under the disappearing one to the one above itself (set it to nothing for the top line just in case)
             else {
@@ -249,33 +254,33 @@ class Tetris: ObservableObject {
         isAnimating = false
         render()
     }
-
+    
     private func render() {
         renderGrid = grid  // Set the render grid to the game grid
-
+        
         let lowest: Int = findLowest()  // Find the position the piece will be placed
-
+        
         // Draw each square in the hard drop preview
         for coord in tetrominoes[activePiece][activeRotation] {
             let x = coord.x + activePosition.x
             let y = coord.y + activePosition.y + lowest
-
+            
             if y >= 0 && y < 20 && x >= 0 && x < 10 {
                 renderGrid[y][x] = 8  // Set the square to be grey
             }
         }
-
+        
         // Draw each square in the active piece
         for coord in tetrominoes[activePiece][activeRotation] {
             let x = coord.x + activePosition.x
             let y = coord.y + activePosition.y
-
+            
             if y >= 0 && y < 20 && x >= 0 && x < 10 {
                 renderGrid[y][x] = activePiece + 1  // Set the square to the active piece's colour
             }
         }
     }
-
+    
     private func findLowest() -> Int {
         var col: Bool = false
         var offset: Int = 0
@@ -290,22 +295,22 @@ class Tetris: ObservableObject {
                 offset += 1
             }  // Only add one to the offset when the test succeeds because the final offset should place it one square above being invalid
         }
-
+        
         return offset
     }
-
+    
     private func checkPiece(pos: Coord, rot: Int) -> Bool {
         for coord in tetrominoes[activePiece][rot] {  // Test each square of the current piece in its new location
             let x = coord.x + pos.x
             let y = coord.y + pos.y
-
+            
             if y >= 20 || x < 0 || x >= 10 || (y >= 0 && grid[y][x] != 0) {
                 return false
             }  // Allow y to be less than 0 without being out of the bounds of the array (don't consider exceeding the top of the grid as invalid)
         }
         return true
     }
-
+    
     let tetrominoes: [[[Coord]]] = [
         // I
         [
@@ -441,7 +446,7 @@ class Tetris: ObservableObject {
             ],
         ],
     ]  // [Tetrominos][Rotations][Squares]
-
+    
     let Vkicks: [[[Coord]]] = [
         // Left
         [
@@ -482,7 +487,7 @@ class Tetris: ObservableObject {
             ],
         ],
     ]  // [Directions][ExistingRotations][Squares]
-
+    
     let Ikicks: [[[Coord]]] = [
         // Left
         [
@@ -528,7 +533,7 @@ class Tetris: ObservableObject {
 struct Coord {
     var x: Int
     var y: Int
-
+    
     init(x: Int, y: Int) {
         self.x = x
         self.y = y
