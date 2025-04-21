@@ -9,7 +9,6 @@ import SwiftUI
 
 struct GameView: View {
     @ObservedObject var game: Tetris
-    @Binding var isMenuPresented: Bool
     @State private var keyRepeatTimer: Timer?
     @State private var lastKeyPressed: UInt16?
     @State private var lastEvent: NSEvent?
@@ -152,8 +151,7 @@ struct GameView: View {
             game.applyGravity(manual: true)
         case .hide:
             game.pauseUnpause(pause: true)
-            isMenuPresented = false
-            //NSApp.hide(nil) <- Decided not to use this because the window disapeares but the icon stayes selected
+            NSApp.hide(nil)
         }
     }
     
